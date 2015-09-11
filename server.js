@@ -4,16 +4,15 @@ var app = express();
 var bodyParser = require('body-Parser');
 var mongoose = require('mongoose');
 var Bear = require('./app/models/bear');
+var db = require('./config/db');
 
-mongoose.connect('mongodb://localhost/bearAPI');
-
+mongoose.connect(db.url);
+// setting port number
+var port = process.env.PORT || 3000;
 
 // configure bodyParser()
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(bodyParser.json());
-
-// setting port number
-var port = process.env.PORT || 3000;
 
 // routes setup
 var router = express.Router();
@@ -27,13 +26,14 @@ router.get('/', function(req, res) {
   res.json({message: 'api is working!'});
 });
 
-// my code
 router.route('/bears')
   .post(function(req, res){
     // create a new instance of the Bear model
     var bear = new Bear();
     // set the bears name. This comes from the req.
     bear.name = req.body.name;
+    bear.type = req.body.type;
+    bear.location = req.body.location;
     // save the bear and check for errs
 
     bear.save(function(err) {
