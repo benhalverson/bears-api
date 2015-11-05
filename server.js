@@ -3,13 +3,17 @@ var express = require('express');
 var app = express();
 var bodyParser = require('body-Parser');
 var mongoose = require('mongoose');
+var cors = require('cors');
 var Bear = require('./app/models/bear');
+var Person = require('./app/models/person');
 var db = require('./config/db');
 
 mongoose.connect(db.url);
 // setting port number
 var port = process.env.PORT || 3000;
 
+
+app.use(cors());
 // configure bodyParser()
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(bodyParser.json());
@@ -17,17 +21,52 @@ app.use(bodyParser.json());
 // routes setup
 var router = express.Router();
 
-router.use(function(req, res, next){
-//logging stuff
-  console.log('The API is working :o) ');
-  next();
+router.get('/about', function(req, res){
+  res.json({message: 'New api endpoint works'});
 });
+
+
+
+
+
 router.get('/', function(req, res) {
   res.json({message: 'api is working!'});
 });
 
-router.route('/bears')
+router.get('/search', function(req, res){
+  var query
+  Person.find({});
+})
+router.route('/person')
   .post(function(req, res){
+  var person = new Person();
+  person.name = req.body.name;
+  person.email = req.body.email;
+  person.age = req.body.age;
+
+  //save a person
+  person.save(function(err){
+    if(err) {
+      console.error('oh noes ', err);
+      res.send(err);
+    } else {
+      res.json({message: 'Person added to database'});
+    }
+  });
+})
+  // get a list of people
+  .get(function(req, res){
+    Person.find(function(err, person){
+      if(err) {
+        console.error(err);
+      } else {
+        res.json(person);
+      }
+    });
+  });
+
+
+router.route('/bears').post(function(req, res){
     // create a new instance of the Bear model
     var bear = new Bear();
     // set the bears name. This comes from the req.
