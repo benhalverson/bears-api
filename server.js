@@ -9,11 +9,12 @@ var Person = require('./app/models/person');
 var db = require('./config/db');
 
 mongoose.connect(db.url);
+
 // setting port number
 var port = process.env.PORT || 3000;
 
-
 app.use(cors());
+
 // configure bodyParser()
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(bodyParser.json());
@@ -25,18 +26,14 @@ router.get('/about', function(req, res){
   res.json({message: 'New api endpoint works'});
 });
 
-
-
-
-
-router.get('/', function(req, res) {
+router.get('/', function(req, res){
   res.json({message: 'api is working!'});
 });
 
 router.get('/search', function(req, res){
-  var query
+  // var query;
   Person.find({});
-})
+});
 router.route('/person')
   .post(function(req, res){
   var person = new Person();
