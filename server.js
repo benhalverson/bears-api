@@ -4,16 +4,27 @@ var app = express();
 var bodyParser = require('body-Parser');
 var mongoose = require('mongoose');
 var cors = require('cors');
-var Bear = require('./app/models/bear');
-var Person = require('./app/models/person');
-var db = require('./config/db');
+// var Bear = require('./app/models/bear');
+// var Person = require('./app/models/person');
+var CoveredCall = require('./app/models/coveredCall');
+// var db = require('./config/db');
 
-mongoose.connect(db.url);
+// mongoose.connect(db.url);
 
 // setting port number
 var port = process.env.PORT || 3000;
 
 app.use(cors());
+app.options('/coveredcall', cors());
+
+var whitelist = ['http://localhost', 'http://mymacbookpro.etrade.com'];
+
+var corsOptions = {
+  origin: function(origin, callback) {
+    var originIsWhitelisted = whitelist.indexOf(origin) !== -1;
+    callback(null, originIsWhitelisted);
+  }
+};
 
 // configure bodyParser()
 app.use(bodyParser.urlencoded({extended: true}));
@@ -29,6 +40,16 @@ router.get('/about', function(req, res){
 router.get('/', function(req, res){
   res.json({message: 'api is working!'});
 });
+
+//New routes for etrade
+
+router.post('/coveredcall', cors(), function (req, res) {
+  var coveredCall = new CoveredCall();
+  coveredCall.symbol = req.body.symbol;
+  coveredCall.strike = req.body.strike;
+});
+
+
 
 router.get('/search', function(req, res){
   // var query;
