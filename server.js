@@ -4,20 +4,20 @@ var app = express();
 var bodyParser = require('body-Parser');
 var mongoose = require('mongoose');
 var cors = require('cors');
-// var Bear = require('./app/models/bear');
-// var Person = require('./app/models/person');
+var Bear = require('./app/models/bear');
+var Person = require('./app/models/person');
 var CoveredCall = require('./app/models/coveredCall');
-// var db = require('./config/db');
+var db = require('./config/db');
 
 // mongoose.connect(db.url);
 
 // setting port number
 var port = process.env.PORT || 3000;
 
-app.use(cors());
+app.use(cors(corsOptions));
 app.options('/coveredcall', cors());
 
-var whitelist = ['http://localhost', 'http://mymacbookpro.etrade.com'];
+var whitelist = ['http://localhost:4000', 'http://mymacbookpro.etrade.com:4000'];
 
 var corsOptions = {
   origin: function(origin, callback) {
@@ -39,14 +39,44 @@ router.get('/about', function(req, res){
 
 router.get('/', function(req, res){
   res.json({message: 'api is working!'});
+  console.log('hello');
+});
+router.post('/', function(req, res){
+  // res.json({message: 'api is working!'});
+  // console.log('hello');
+  res.send('POST working');
 });
 
 //New routes for etrade
 
 router.post('/coveredcall', cors(), function (req, res) {
   var coveredCall = new CoveredCall();
-  coveredCall.symbol = req.body.symbol;
-  coveredCall.strike = req.body.strike;
+  // coveredCall.symbol = req.body.symbol;
+  // coveredCall.strikePrice = req.body.strikePrice;
+  coveredCall = req.body;
+  console.log('req.body', req.body);
+  console.log('stock symobol ', coveredCall.symbol );
+  console.log('req.body stock: ', req.body.symbol);
+  console.log('strikePrice: ', coveredCall.strikePrice);
+  console.log('req.body strike price: ', req.body.strikePrice);
+  console.log('*************************');
+
+  console.log('coveredCall: ', coveredCall);
+
+  console.log('**************************');
+  res.send(coveredCall);
+
+
+  // coveredCall.save(function(err) {
+  //   if(err) {
+  //     console.error('Covered call error: ', err);
+  //     res.send(err);
+  //   } else {
+  //     res.json(coveredCall);
+  //     console.log('save covered call: ', coveredCall);
+  //     res.json({message: 'DATA added to database'});
+  //   }
+  // })
 });
 
 
