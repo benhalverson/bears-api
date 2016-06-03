@@ -7,9 +7,10 @@ var cors = require('cors');
 var Bear = require('./app/models/bear');
 var Person = require('./app/models/person');
 var CoveredCall = require('./app/models/coveredCall');
+var SecuredPuts = require('./app/models/SecuredPuts');
 var db = require('./config/db');
 
-// mongoose.connect(db.url);
+mongoose.connect(db.url);
 
 // setting port number
 var port = process.env.PORT || 3000;
@@ -51,34 +52,24 @@ router.post('/', function(req, res){
 
 router.post('/coveredcall', cors(), function (req, res) {
   var coveredCall = new CoveredCall();
-  // coveredCall.symbol = req.body.symbol;
-  // coveredCall.strikePrice = req.body.strikePrice;
   coveredCall = req.body;
-  console.log('req.body', req.body);
-  console.log('stock symobol ', coveredCall.symbol );
-  console.log('req.body stock: ', req.body.symbol);
-  console.log('strikePrice: ', coveredCall.strikePrice);
-  console.log('req.body strike price: ', req.body.strikePrice);
   console.log('*************************');
-
   console.log('coveredCall: ', coveredCall);
-
   console.log('**************************');
   res.send(coveredCall);
-
-
-  // coveredCall.save(function(err) {
-  //   if(err) {
-  //     console.error('Covered call error: ', err);
-  //     res.send(err);
-  //   } else {
-  //     res.json(coveredCall);
-  //     console.log('save covered call: ', coveredCall);
-  //     res.json({message: 'DATA added to database'});
-  //   }
-  // })
 });
 
+router.post('/securedputs', (req, res) => {
+  let securedputs = new SecuredPuts();
+
+  securedputs = req.body;
+  console.log('*************************');
+  console.log('SecuredPuts: ', securedputs);
+  console.log('**************************');
+
+
+  res.send(securedputs);
+})
 
 
 router.get('/search', function(req, res){
