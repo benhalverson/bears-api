@@ -1,4 +1,4 @@
 'use strict';
 module.exports = {
-  url: 'mongodb://localhost/stockdata'
+  url: 'mongodb://localhost/dailyjobsV2'
 };

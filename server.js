@@ -4,8 +4,8 @@ var app = express();
 var bodyParser = require('body-Parser');
 var mongoose = require('mongoose');
 var cors = require('cors');
-var Bear = require('./app/models/bear');
-var Person = require('./app/models/person');
+// var Bear = require('./app/models/bear');
+// var Person = require('./app/models/person');
 const Profile = require('./app/models/profile');
 var db = require('./config/db');
 
@@ -14,18 +14,7 @@ mongoose.connect(db.url);
 // setting port number
 var port = process.env.PORT || 3000;
 
-app.use(cors(corsOptions));
-app.options('/coveredcall', cors());
-
-var whitelist = ['http://localhost:3000'];
-
-var corsOptions = {
-  origin: function(origin, callback) {
-    var originIsWhitelisted = whitelist.indexOf(origin) !== -1;
-    callback(null, originIsWhitelisted);
-  }
-};
-
+app.use(cors());
 // configure bodyParser()
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(bodyParser.json());
@@ -147,20 +136,30 @@ router.route('/profile').post((req, res) => {
     // create a new instance of the Bear model
     let p = new Profile();
     // set the bears name. This comes from the req.
-    p.username = req.body.username;
+    p.userName = req.body.userName;
     p.firstName = req.body.firstName;
     p.lastName = req.body.lastName;
     p.email = req.body.email;
+    p.phoneNumber = req.body.phoneNumber;
+    p.userPrivacy = req.body.userPrivacy;
+    p.position = req.body.position;
+    p.company = req.body.company;
+    p.bio = req.body.bio;
+    p.city = req.body.city;
+    p.state = req.body.state;
     // save the bear and check for errs
 
-    p.save(function(err) {
-        if(err) {
-            res.send(err);
-
-        } else {
-            res.json(p);
-        }
-    });
+    // p.save(function(err) {
+    //     if(err) {
+    //         res.send(err);
+    //
+    //     } else {
+    //         res.json(p);
+    //     }
+    // });
+    p.save()
+        .then((p) => res.json(p))
+        .catch(e => console.log(e));
 })
     .get(function(req, res){
         Profile.find(function(err, p){
@@ -172,9 +171,59 @@ router.route('/profile').post((req, res) => {
             }
         });
     });
+function update(req, res) {
+    Profile.findById(req.params.p_id, (err, p) => {
+        p.username = req.body.username;
+        p.save()
+            .then(p => res.json(p))
+            .catch(err => console.log(err));
+    })
+}
+router.route('/profile/:p_id')
+    .get((req, res) => {
+        Profile.findById(req.params.p_id, (err, p) => {
+          res.json(p);
+        }).catch(err => console.log(err));
 
+    })
+    // .put(update);
+    .put((req, res) => {
+        Profile.findById(req.params.p_id, (err, p) => {
+            p.userName = req.body.userName;
+            p.firstName = req.body.firstName;
+            p.lastName = req.body.lastName;
+            p.email = req.body.email;
+            p.phoneNumber = req.body.phoneNumber;
+            p.userPrivacy = req.body.userPrivacy;
+            p.position = req.body.position;
+            p.company = req.body.company;
+            p.bio = req.body.bio;
+            p.city = req.body.city;
+            p.state = req.body.state;
 
+            p.save()
+                .then((p) => res.json(p))
+                .catch(err => console.log(err))
+        })
+        // .delete(deleteme());
+        //
+        //     function deleteme(err, req, res) {
+        //         Profile.remove({_id: req.params.p_id}, p)
+        //             .then(res.json({message: 'Successfully deleted'}))
+        //             .catch(err);
+        //     }
 
+    });
+
+router.route('/profile/:p_id')
+    .delete((req, res) => {
+        Profile.remove({_id: req.params.p_id}, {
+
+        })
+            .then(res.json({message: 'deleted'}))
+            .catch(err => console.log(err));
+
+    })
 // registering our routing
 // prefix routes with /api
 app.use('/api', router);
