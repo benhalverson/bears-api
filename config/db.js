@@ -1,4 +1,7 @@
 'use strict';
 module.exports = {
-  url: 'mongodb://localhost/dailyjobsV2'
+  url: process.env.MONGO_URL || 'mongodb://localhost/dailyjobsV2',
+  useMongoClient: true,
+  server:
+      {auto_reconnect: true}
 };
