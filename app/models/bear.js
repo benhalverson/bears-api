@@ -2,10 +2,10 @@
 var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 var BearSchema = new Schema({
-  name: {type: String, required: true},
-  type: {type: String, required: true},
-  location: {type: String, required: true}
-
+  name: String, //{type: String, required: true},
+  type: String, //{type: String, required: true},
+  location: String, //{type: String, required: true},
+  foo: String
 });
 
 module.exports = mongoose.model('Bear', BearSchema);

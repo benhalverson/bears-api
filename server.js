@@ -6,8 +6,7 @@ var mongoose = require('mongoose');
 var cors = require('cors');
 var Bear = require('./app/models/bear');
 var Person = require('./app/models/person');
-var CoveredCall = require('./app/models/coveredCall');
-var SecuredPuts = require('./app/models/SecuredPuts');
+const Profile = require('./app/models/profile');
 var db = require('./config/db');
 
 mongoose.connect(db.url);
@@ -18,7 +17,7 @@ var port = process.env.PORT || 3000;
 app.use(cors(corsOptions));
 app.options('/coveredcall', cors());
 
-var whitelist = ['http://localhost:4000', 'http://mymacbookpro.etrade.com:4000'];
+var whitelist = ['http://localhost:3000'];
 
 var corsOptions = {
   origin: function(origin, callback) {
@@ -38,47 +37,10 @@ router.get('/about', function(req, res){
   res.json({message: 'New api endpoint works'});
 });
 
-router.get('/', function(req, res){
-  res.json({message: 'api is working!'});
-  console.log('hello');
-});
-router.post('/', function(req, res){
-  // res.json({message: 'api is working!'});
-  // console.log('hello');
-  res.send('POST working');
-});
-
-//New routes for etrade
-
-router.post('/coveredcall', cors(), function (req, res) {
-  var coveredCall = new CoveredCall();
-  coveredCall = req.body;
-  console.log('*************************');
-  console.log('coveredCall: ', coveredCall);
-  console.log('**************************');
-  res.send(coveredCall);
-});
-
-router.post('/securedputs', (req, res) => {
-  let securedputs = new SecuredPuts();
-
-  securedputs = req.body;
-  console.log('*************************');
-  console.log('SecuredPuts: ', securedputs);
-  console.log('**************************');
-
-
-  res.send(securedputs);
-})
-
-
-router.get('/search', function(req, res){
-  // var query;
-  Person.find({});
-});
-router.route('/person')
-  .post(function(req, res){
+router.route('/profile/new')
+  .post((req, res) => {
   var person = new Person();
+  person.username = req.body.username;
   person.name = req.body.name;
   person.email = req.body.email;
   person.age = req.body.age;
@@ -89,7 +51,7 @@ router.route('/person')
       console.error('oh noes ', err);
       res.send(err);
     } else {
-      res.json({message: 'Person added to database'});
+      res.json(person);
     }
   });
 })
@@ -112,6 +74,7 @@ router.route('/bears').post(function(req, res){
     bear.name = req.body.name;
     bear.type = req.body.type;
     bear.location = req.body.location;
+    bear.foo = req.body.foo;
     // save the bear and check for errs
 
     bear.save(function(err) {
@@ -119,7 +82,7 @@ router.route('/bears').post(function(req, res){
         res.send(err);
 
       } else {
-        res.json({message: 'Bear Created'});
+        res.json(bear);
       }
     });
   })
@@ -154,11 +117,13 @@ router.route('/bears/:bear_id')
           res.send(err);
         } else {
           bear.name = req.body.name;
+          bear.type = req.body.type;
+          bear.location = req.body.location;
           bear.save(function(err){
             if(err){
               res.send(err)
             } else{
-              res.json({message: 'Bear updated!' });
+              res.json(bear);
             }
           });
         }
@@ -175,6 +140,40 @@ router.route('/bears/:bear_id')
     });
 
 // more routes for our api will happen here
+
+
+
+router.route('/profile').post((req, res) => {
+    // create a new instance of the Bear model
+    let p = new Profile();
+    // set the bears name. This comes from the req.
+    p.username = req.body.username;
+    p.firstName = req.body.firstName;
+    p.lastName = req.body.lastName;
+    p.email = req.body.email;
+    // save the bear and check for errs
+
+    p.save(function(err) {
+        if(err) {
+            res.send(err);
+
+        } else {
+            res.json(p);
+        }
+    });
+})
+    .get(function(req, res){
+        Profile.find(function(err, p){
+            if(err){
+                res.send(err);
+
+            } else {
+                res.json(p);
+            }
+        });
+    });
+
+
 
 // registering our routing
 // prefix routes with /api

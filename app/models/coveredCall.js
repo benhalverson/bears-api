@@ -6,8 +6,8 @@ var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 var CoveredCallSchema = new Schema({
 	symbol: String,
-	strikePrice: String,
-	optionBid: String,
+	strikePrice: Number,
+	optionBid: Number,
 	standStillReturnPercent: String,
 	stockPriceMin: String,
 	stockPriceMax: String
